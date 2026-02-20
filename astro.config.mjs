@@ -14,7 +14,7 @@ export default defineConfig({
 
   // Habilita SSR para que Spring Boot y Astro hablen más rápido
   output: "server",
-  site: "https://hyugodev.me",
+  site: "https://inventario.hyugodev.me",
   base: "/",
   prefetch: {
     prefetchAll: true,
