@@ -15,12 +15,6 @@ export default defineConfig({
   output: "server",
   site: "https://inventario.hyugodev.me",
   base: "/",
-  redirects: {
-    "/": {
-      status: 302,
-      destination: "/dashboard",
-    },
-  },
   prefetch: {
     prefetchAll: true,
     defaultStrategy: "hover", // Precarga datos cuando el mouse pasa sobre un link
@@ -30,6 +24,6 @@ export default defineConfig({
   }),
   server: {
     host: true,
-    port: 3000
-  }
+    port: 3000,
+  },
 });
