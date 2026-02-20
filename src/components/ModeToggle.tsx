@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Moon, Sun } from "lucide-react"
-
+ 
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -8,17 +8,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
+ 
 export function ModeToggle() {
   const [theme, setThemeState] = React.useState<
     "theme-light" | "dark" | "system"
   >("theme-light")
-
+ 
   React.useEffect(() => {
     const isDarkMode = document.documentElement.classList.contains("dark")
     setThemeState(isDarkMode ? "dark" : "theme-light")
   }, [])
-
+ 
   React.useEffect(() => {
     const isDark =
       theme === "dark" ||
@@ -26,7 +26,7 @@ export function ModeToggle() {
         window.matchMedia("(prefers-color-scheme: dark)").matches)
     document.documentElement.classList[isDark ? "add" : "remove"]("dark")
   }, [theme])
-
+ 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

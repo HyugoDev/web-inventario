@@ -7,7 +7,6 @@ import node from "@astrojs/node";
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
-
   vite: {
     plugins: [tailwindcss()],
   },
@@ -15,7 +14,12 @@ export default defineConfig({
   // Habilita SSR para que Spring Boot y Astro hablen más rápido
   output: "server",
   site: "https://inventario.hyugodev.me",
-  base: "/",
+  redirects: {
+    "/": {
+      status: 302,
+      destination: "/dashboard",
+    },
+  },
   prefetch: {
     prefetchAll: true,
     defaultStrategy: "hover", // Precarga datos cuando el mouse pasa sobre un link
