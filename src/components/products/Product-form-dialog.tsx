@@ -162,10 +162,9 @@ export function ProductFormDialog({
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          role="combobox"
+                          aria-haspopup="listbox"
                           aria-expanded={openBox}
                           className="justify-between"
-                          aria-label="Category combobox"
                         >
                           {field.value ? (
                             categoriesSearchQuery.data?.find(
@@ -181,13 +180,16 @@ export function ProductFormDialog({
                       </PopoverTrigger>
                     </FormControl>
                     <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
-                      <Command>
+                      <Command id="product-combobox-list">
                         <CommandInput
                           placeholder="Search category..."
                           value={searchQuery}
                           onValueChange={setSearchQuery}
+                          role="combobox"
+                          aria-controls="category-list"
+                          aria-autocomplete="list"
                         />
-                        <CommandList>
+                        <CommandList id="category-list" role="listbox">
                           <CommandEmpty>No category found.</CommandEmpty>
                           <CommandGroup>
                             {categoriesSearchQuery.data?.map((method: any) => (
