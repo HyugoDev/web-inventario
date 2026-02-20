@@ -20,7 +20,6 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: "hover", // Precarga datos cuando el mouse pasa sobre un link
   },
-
   adapter: node({
     mode: "standalone",
   }),
