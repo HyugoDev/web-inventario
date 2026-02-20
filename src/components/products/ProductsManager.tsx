@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 import {
-  IconGripVertical,
+  IconPlus,
   IconDotsVertical,
-  IconChevronsLeft,
-  IconChevronsRight,
 } from "@tabler/icons-react";
 import type { ColumnDef } from "node_modules/@tanstack/table-core/build/lib/types";
 
@@ -112,7 +109,7 @@ export function ProductsManager() {
           onClick={() => setFormOpen(true)}
           className="neon-glow font-mono text-xs"
         >
-          <Plus className="mr-2 h-4 w-4" /> NUEVO PRODUCTO
+          <IconPlus className="mr-2 h-4 w-4" /> NUEVO PRODUCTO
         </Button>
       </div>
 

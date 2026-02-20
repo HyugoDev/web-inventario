@@ -1,23 +1,21 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+
 import { useCategories } from "@/hooks/useCategories";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { CategoryFormDialog } from "@/components/categorias/category-form-dialog";
-
-
-
-import {
-  IconGripVertical,
-  IconDotsVertical,
-  IconChevronsLeft,
-  IconChevronsRight,
-} from "@tabler/icons-react";
+import { IconPlus, IconDotsVertical } from "@tabler/icons-react";
 import type { ColumnDef } from "node_modules/@tanstack/table-core/build/lib/types";
 
 import { type CategoryResponse } from "@/types/api";
 import { DataTable } from "@/components/data-table/data-table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export function CategoriesManager() {
   const { categoriesQuery, deleteMutation } = useCategories();
@@ -56,34 +54,38 @@ export function CategoriesManager() {
   //   },
   // ];
 
-
   const columns: ColumnDef<CategoryResponse>[] = [
-  { accessorKey: "id", header: "ID" },
-  { accessorKey: "name", header: "Nombre" },
-  { accessorKey: "description", header: "Descripción" },
-   {
-    id: "actions",
-    cell: ({ row }: { row: any }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <IconDotsVertical />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" onClick={() => setDeleteTargetId(row.original.id)}>Eliminar</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-]
+    { accessorKey: "id", header: "ID" },
+    { accessorKey: "name", header: "Nombre" },
+    { accessorKey: "description", header: "Descripción" },
+    {
+      id: "actions",
+      cell: ({ row }: { row: any }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <IconDotsVertical />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => setDeleteTargetId(row.original.id)}
+            >
+              Eliminar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
 
   return (
     <div className="flex flex-col gap-6 p-4">
@@ -98,14 +100,11 @@ export function CategoriesManager() {
           onClick={() => setFormOpen(true)}
           className="neon-glow font-mono text-xs"
         >
-          <Plus className="mr-2 h-4 w-4" /> NUEVA CATEGORÍA
+          <IconPlus className="mr-2 h-4 w-4" /> NUEVA CATEGORÍA
         </Button>
       </div>
 
-      
-
       <DataTable columns={columns} query={categoriesQuery} />
-   
 
       <CategoryFormDialog open={formOpen} onOpenChange={setFormOpen} />
 

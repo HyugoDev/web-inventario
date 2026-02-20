@@ -36,7 +36,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { IconCheck, IconChevronDown } from "@tabler/icons-react";
 
 const productSchema = z.object({
   name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
@@ -176,7 +176,7 @@ export function ProductFormDialog({
                               Select a category...
                             </span>
                           )}
-                          <ChevronsUpDownIcon className="opacity-50" />
+                          <IconChevronDown className="opacity-50" />
                         </Button>
                       </PopoverTrigger>
                     </FormControl>
@@ -200,7 +200,7 @@ export function ProductFormDialog({
                                 }}
                               >
                                 {method.name}
-                                <CheckIcon
+                                <IconCheck
                                   className={cn(
                                     "ml-auto",
                                     value === method.id
