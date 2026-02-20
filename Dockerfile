@@ -31,4 +31,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Comando para arrancar el servidor
-CMD ["node", "./dist/server/entry.mjs"]
+CMD ["npm", "run", "start"]
