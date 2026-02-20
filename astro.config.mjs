@@ -1,8 +1,8 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
-import react from '@astrojs/react';
-import node from '@astrojs/node';
+import react from "@astrojs/react";
+import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,14 +13,15 @@ export default defineConfig({
   },
 
   // Habilita SSR para que Spring Boot y Astro hablen más rápido
-  output: 'server',
-  base: '/',
+  output: "server",
+  site: "https://hyugodev.me",
+  base: "/",
   prefetch: {
     prefetchAll: true,
-    defaultStrategy: 'hover' // Precarga datos cuando el mouse pasa sobre un link
+    defaultStrategy: "hover", // Precarga datos cuando el mouse pasa sobre un link
   },
 
   adapter: node({
-    mode: 'standalone'
-  })
+    mode: "standalone",
+  }),
 });
