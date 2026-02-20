@@ -1,4 +1,3 @@
-import type { b } from "node_modules/tailwindcss/dist/types-CJYAW1ql.d.mts";
 
 /**
  * Tipado para Categorías
@@ -9,10 +8,9 @@ export interface CategoryRequest {
 }
 
 export interface CategoryResponse {
-  id: string; // UUID generado por Spring Boot
+  id: string; //  generado por Spring Boot
   name: string;
-  description: string;
-  createdAt: string; // ISO Date string
+  description?: string;
 }
 
 /**
@@ -21,17 +19,17 @@ export interface CategoryResponse {
 export interface ProductRequest {
   name: string;
   description?: string;
-  categoryId: bigint; // ID de la categoría a la que pertenece el producto
+  categoryId: string;
   price: number;
   sku: string;
   imageUrl?: string;
 }
 
 export interface ProductResponse {
-  id: string;
+  id: bigint;
   name: string;
   description: string;
-  categoryId: bigint;
+  categoryId: string;
   categoryName: string; // Mapeado profesionalmente desde la entidad Category
   price: number;
   sku: string;
@@ -43,15 +41,15 @@ export interface ProductResponse {
  * Tipado para Inventario
  */
 export interface InventoryRequest {
-  productId: bigint;
+  productId: string;
   quantity: number;
   minStock: number;
   location: string;
 }
 
 export interface InventoryResponse {
-  id: bigint;
-  productId: bigint;
+  id: string;
+  productId: string;
   productName: string; // Mapeado para evitar fetch extra en el frontend
   quantity: number;
   minStock: number;

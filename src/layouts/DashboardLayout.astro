@@ -1,38 +1,63 @@
 ---
-import { AppSidebar } from "@/components/app-sidebar"
-
-import { DataTable } from "@/components/data-table"
-import { SectionCards } from "@/components/section-cards"
-import { SiteHeader } from "@/components/site-header"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
-
+import "../styles/global.css";
+import DashboardShell from "@/components/dashboard/DashboardShell";
+import { Toaster } from "sileo";
+import { ClientRouter } from "astro:transitions";
 ---
 
+<script is:inline>
+  const getThemePreference = () => {
+    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+      return localStorage.getItem("theme");
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  };
+  const isDark = getThemePreference() === "dark";
+  document.documentElement.classList[isDark ? "add" : "remove"]("dark");
 
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div class="flex flex-1 flex-col">
-          <div class="@container/main flex flex-1 flex-col gap-2">
-            <div class="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
-              <div class="px-4 lg:px-6">
-                <ChartAreaInteractive />
-              </div>
-              <!-- <DataTable data={data} /> -->
-            </div>
-          </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+  if (typeof localStorage !== "undefined") {
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+</script>
+
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Dashboard</title>
+  </head>
+  <ClientRouter />
+
+  <body>
+    <Toaster
+      position="top-center"
+      options={{
+        fill: "var(--toast-bg)",
+        roundness: 16,
+        styles: {
+          title: "text-[var(--toast-title)]!",
+          description: "text-[var(--toast-desc)]!",
+          badge: "bg-[var(--toast-accent)]/10! text-[var(--toast-accent)]!",
+          button:
+            "bg-[var(--toast-accent)]/10! hover:bg-[var(--toast-accent)]/15! text-[var(--toast-accent)]!",
+        },
+      }}
+      client:only
+    />
+    <DashboardShell client:load>
+      <slot transition:name="root" transition:animate="none" />
+    </DashboardShell>
+  </body>
+</html>
+
+

@@ -2,21 +2,11 @@
 
 import * as React from "react"
 import {
-  IconCamera,
-  IconChartBar,
+  IconBuildingWarehouse,
   IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
+  IconFolders,
   IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
-  IconSettings,
-  IconUsers,
+  IconPackage,
 } from "@tabler/icons-react"
 
 import { NavMain } from "@/components/dashboard/nav-main"
@@ -31,33 +21,30 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
+
+
 const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
+      title: "Categorías",
+      url: "/dashboard/categorias",
+      icon: IconFolders ,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
+      title: "Productos",
+      url: "/dashboard/productos",
+      icon: IconPackage,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
+      title: "Inventario",
+      url: "/dashboard/inventario",
+      icon: IconBuildingWarehouse,
+    }
   ],
   
 }
@@ -72,9 +59,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
-              <a href="#">
+              <a href="/">
                 <IconInnerShadowTop className="size-5!" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">Hyugodev-Inventario</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
