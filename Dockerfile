@@ -1,49 +1,53 @@
-# 1. Etapa de dependencias (Instalación completa)
-FROM node:20-alpine AS deps
-# libc6-compat es necesaria para librerías nativas en Alpine
-RUN apk add --no-cache libc6-compat
+# --- ESTADIO 1: EL TEMPLO (Preparación) ---
+FROM node:20-alpine AS builder
+RUN apk add --no-cache libc6-compat && \
+    npm install -g node-prune
+
 WORKDIR /app
 
-# Copiamos ambos para que npm ci no falle
+# Usamos un "Cache Mount" para que la carpeta .npm no se guarde en la imagen
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 
-# 2. Etapa de construcción (Build)
-FROM node:20-alpine AS build
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# 3. Etapa de producción (Imagen final)
+# --- ESTADIO 2: LA PURGA (Optimización extrema de node_modules) ---
+# Instalamos solo producción y podamos agresivamente
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev && \
+    node-prune && \
+    # Limpieza manual de archivos que node-prune olvida
+    find node_modules -type f -name "*.md" -delete && \
+    find node_modules -type f -name "*.ts" -delete && \
+    find node_modules -type d -name "test" -exec rm -rf {} +
+
+# --- ESTADIO 3: EL REINO DIVINO (Runtime puro) ---
 FROM node:20-alpine AS runtime
-# Instalamos curl para que el Healthcheck de Dokploy funcione
-RUN apk add --no-cache curl
+
+# Variables de entorno sagradas
+ENV NODE_ENV=production \
+    HOST=0.0.0.0 \
+    PORT=3000 \
+    PATH="/app/node_modules/.bin:$PATH"
+
 WORKDIR /app
 
-# Variables de entorno
-ENV NODE_ENV=production
-ENV HOST=0.0.0.0
-ENV PORT=3000
-
-# Seguridad: Creamos un usuario para no correr como root
+# Creamos el usuario celestial
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 astro
 
-# Instalamos SOLO dependencias de producción y limpiamos caché
-COPY package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+# COPIA ATÓMICA: Solo lo estrictamente necesario
+# No copiamos package.json ni npm porque ya no los usaremos
+COPY --from=builder --chown=astro:nodejs /app/dist ./dist
+COPY --from=builder --chown=astro:nodejs /app/node_modules ./node_modules
 
-# Copiamos el build y asignamos permisos al usuario astro de una vez
-COPY --from=build --chown=astro:nodejs /app/dist ./dist
+# Healthcheck usando Fetch nativo de Node 20 (cero dependencias extra)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://localhost:3000/').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
 
-# Monitoreo de salud: Si el puerto 3000 no responde, el contenedor se reinicia
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD curl -f http://localhost:3000/ || exit 1
-
-# Usamos el usuario limitado
 USER astro
-
 EXPOSE 3000
 
 # Comando para arrancar el servidor
