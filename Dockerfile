@@ -1,9 +1,9 @@
-# 1. Etapa de dependencias (Caché eficiente)
+# 1. Etapa de dependencias
 FROM node:20-alpine AS deps
-# Instalamos libc6-compat porque algunas librerías de Node (como Sharp) lo necesitan en Alpine
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
+# IMPORTANTE: Copiar ambos archivos para que npm ci funcione
 COPY package*.json ./
 RUN npm ci
 
@@ -14,7 +14,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# 3. Etapa de producción (Imagen final ultra ligera)
+# 3. Etapa de producción
 FROM node:20-alpine AS runtime
 WORKDIR /app
 
@@ -22,16 +22,20 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# Creamos un usuario sin privilegios para mayor seguridad
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 astro
 
-# Copiamos solo lo necesario
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/package.json ./package.json
+# Copiamos los archivos de configuración de dependencias
+COPY package*.json ./
 
-# Instalamos solo dependencias de producción de forma limpia
+# Ahora npm ci sí encontrará el package-lock.json
 RUN npm ci --omit=dev
+
+# Copiamos el build desde la etapa anterior
+COPY --from=build /app/dist ./dist
+
+# Cambiamos permisos para el usuario astro
+RUN chown -R astro:nodejs /app
 
 USER astro
 
