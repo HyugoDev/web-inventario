@@ -1,42 +1,47 @@
-# 1. Etapa de dependencias
+# 1. Etapa de dependencias (Instalación completa)
 FROM node:20-alpine AS deps
+# libc6-compat es necesaria para librerías nativas en Alpine
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# IMPORTANTE: Copiar ambos archivos para que npm ci funcione
+# Copiamos ambos para que npm ci no falle
 COPY package*.json ./
 RUN npm ci
 
-# 2. Etapa de construcción
+# 2. Etapa de construcción (Build)
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
-# 3. Etapa de producción
+# 3. Etapa de producción (Imagen final)
 FROM node:20-alpine AS runtime
+# Instalamos curl para que el Healthcheck de Dokploy funcione
+RUN apk add --no-cache curl
 WORKDIR /app
 
+# Variables de entorno
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 astro
+# Seguridad: Creamos un usuario para no correr como root
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 astro
 
-# Copiamos los archivos de configuración de dependencias
+# Instalamos SOLO dependencias de producción y limpiamos caché
 COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Ahora npm ci sí encontrará el package-lock.json
-RUN npm ci --omit=dev
+# Copiamos el build y asignamos permisos al usuario astro de una vez
+COPY --from=build --chown=astro:nodejs /app/dist ./dist
 
-# Copiamos el build desde la etapa anterior
-COPY --from=build /app/dist ./dist
+# Monitoreo de salud: Si el puerto 3000 no responde, el contenedor se reinicia
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD curl -f http://localhost:3000/ || exit 1
 
-# Cambiamos permisos para el usuario astro
-RUN chown -R astro:nodejs /app
-
+# Usamos el usuario limitado
 USER astro
 
 EXPOSE 3000
