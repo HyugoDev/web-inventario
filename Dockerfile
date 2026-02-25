@@ -1,29 +1,23 @@
-# 1. Etapa de dependencias
-FROM node:20-slim AS deps
-WORKDIR /app
-COPY package*.json ./
-# Instalamos todas las dependencias (incluyendo las de desarrollo para el build)
-RUN npm install
+FROM node:22-alpine AS builder
 
-# 2. Etapa de construcción
-FROM node:20-slim AS build
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
+COPY package*.json ./
+
+
+RUN npm ci --only=production && npm cache clean --force
+
 COPY . .
+
+FROM node:22-alpine 
+
+WORKDIR /app
+
 RUN npm run build
 
-# 3. Etapa de producción (la imagen final, muy ligera)
-FROM node:20-slim AS runtime
-WORKDIR /app
+COPY --from=builder /app/dist ./dist
 
-# Solo copiamos lo estrictamente necesario para ejecutar
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/package.json ./package.json
 
-# Instalamos solo dependencias de producción para ahorrar espacio
-RUN npm install --omit=dev
-
-# Variables de entorno por defecto
 ENV HOST=0.0.0.0
 ENV PORT=3000
 ENV NODE_ENV=production
