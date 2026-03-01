@@ -1,4 +1,3 @@
-
 /**
  * Tipado para Categorías
  */
@@ -8,9 +7,10 @@ export interface CategoryRequest {
 }
 
 export interface CategoryResponse {
-  id: string; //  generado por Spring Boot
+  id: string;
   name: string;
   description?: string;
+  createdAt: string;
 }
 
 /**
